@@ -2,13 +2,17 @@
 # Daniel Bowers July 2021
 # For each package that apt reports as upgradable, report metadata on the binary from launchpad 
 
+if ! command -v jq &> /dev/null; then
+   echo "Requires jq. Try sudo apt install jq"
+   exit 1
+fi
+
 if [[ -r /etc/os-release ]]; then
    . /etc/os-release
    uversion=${VERSION_CODENAME}
 else
    echo "Not running Ubuntu, sorry!"
 fi
-echo "Version is $uversion"
 
 apt list --upgradeable 2>/dev/null | sed 1d | while read line; do
 
