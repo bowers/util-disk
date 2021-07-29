@@ -2,6 +2,14 @@
 # Daniel Bowers July 2021
 # For each package that apt reports as upgradable, report metadata on the binary from launchpad 
 
+if [[ -r /etc/os-release ]]; then
+   . /etc/os-release
+   uversion=${VERSION_CODENAME}
+else
+   echo "Not running Ubuntu, sorry!"
+fi
+echo "Version is $uversion"
+
 apt list --upgradeable 2>/dev/null | sed 1d | while read line; do
 
    # Split output into separate fields
@@ -15,7 +23,7 @@ apt list --upgradeable 2>/dev/null | sed 1d | while read line; do
    # If cross-architecture, then look at amd64 packages in the repository
 
    # Fetch JSON-format metadata about upgradable packages from Launchpad API
-   sources_json=$(curl -s "https://api.launchpad.net/1.0/ubuntu/+archive/primary?ws.op=getPublishedBinaries&exact_match=true&$pocket=Security&status=Published&distro_arch_series=https://api.launchpad.net/1.0/ubuntu/focal/$architecture&binary_name=$package")
+   sources_json=$(curl -s "https://api.launchpad.net/1.0/ubuntu/+archive/primary?ws.op=getPublishedBinaries&exact_match=true&$pocket=Security&status=Published&distro_arch_series=https://api.launchpad.net/1.0/ubuntu/$uversion/$architecture&binary_name=$package")
 
    echo "Package: $package"
    echo "Pocket: $pocket"
